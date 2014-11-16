@@ -1,6 +1,6 @@
 // set up
-var express  = require('express');
-var app      = express();                        // create our app w/ express
+var express = require('express');
+var app = express();                             // create our app w/ express
 var mongoose = require('mongoose');              // mongoose for mongodb
 var morgan = require('morgan');                  // log requests to the console (express4)
 var bodyParser = require('body-parser');         // pull information from HTML POST (express4)
@@ -15,6 +15,55 @@ app.use(bodyParser.urlencoded({'extended':'true'}));            // parse applica
 app.use(bodyParser.json());                                     // parse application/json
 app.use(bodyParser.json({ type: 'application/vnd.api+json' })); // parse application/vnd.api+json as json
 app.use(methodOverride());
+
+// routes
+// get all todos
+app.get('/api/todos', function(req, res) {
+  // use mongoose to get all todos
+  Todo.find(function(err, todos) {
+    if(err) 
+      res.send(err);
+    else
+      res.json(todos);
+  });
+});
+
+// create a todo
+app.post('/api/todos', function(req, res) {
+  Todo.create({
+    text: req.body.text,
+    done: false
+  }, function(err, todo) {
+    if(err)
+      res.send(err);
+
+    // return all todos
+    Todo.find(function(err, todos) {
+      if(err)
+        res.send(err);
+      else
+        res.json(todos);
+    });
+  });
+});
+
+// delete a todo
+app.delete('/api/todos/:todo_id', function(req, res) {
+  Todo.remove({
+    _id: req.params.todo_id
+  }, function(err, todo) {
+    if(err)
+      res.send(err);
+
+    // return all todos
+    Todo.find(function(err, todos) {
+      if(err)
+        res.send(err);
+      else
+        res.json(todos);
+    });
+  });
+});
 
 // listen (start app with node server.js)
 app.listen(8080);

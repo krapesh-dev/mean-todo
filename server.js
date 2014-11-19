@@ -17,6 +17,10 @@ app.use(bodyParser.json({ type: 'application/vnd.api+json' })); // parse applica
 app.use(methodOverride());
 
 // routes
+app.get('*', function(req, res) {
+  res.sendfile('./public/index.html');
+});
+
 // get all todos
 app.get('/api/todos', function(req, res) {
   // use mongoose to get all todos
